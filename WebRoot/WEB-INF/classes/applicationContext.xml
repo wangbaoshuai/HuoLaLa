@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configLocation"
+			value="classpath:hibernate.cfg.xml">
+		</property>
+	</bean>
+		<!-- 配置事务管理器 -->
+	<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- Aop声明事务 -->
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="add*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="*" read-only="true"/>		
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut expression="execution(* com.youdanle.biz.impl.*.*(..))" id="txcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txcut"/>
+	</aop:config>
+<!-- dao -->
+	<bean id="cardao" class="com.youdanle.dao.impl.CarDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="companydao" class="com.youdanle.dao.impl.CompanyDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="managerdao" class="com.youdanle.dao.impl.ManagerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="gtdao" class="com.youdanle.dao.impl.GoodTypeDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="ctdao" class="com.youdanle.dao.impl.CarTypeDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="pubdao" class="com.youdanle.dao.impl.PuborderDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="getdao" class="com.youdanle.dao.impl.GetorderDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="newdao" class="com.youdanle.dao.impl.NewDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="replydao" class="com.youdanle.dao.impl.ReplyDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="forumdao" class="com.youdanle.dao.impl.ForumDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+<!-- biz -->
+	<bean id="gtbiz" class="com.youdanle.biz.impl.GoodTypeBizImpl">
+		<property name="gtdao" ref="gtdao"></property>
+	</bean>
+	<bean id="ctbiz" class="com.youdanle.biz.impl.CarTypeBizImpl">
+		<property name="ctdao" ref="ctdao"></property>
+	</bean>
+	<bean id="pubbiz" class="com.youdanle.biz.impl.PuborderBizImpl">
+		<property name="pubdao" ref="pubdao"></property>
+	</bean>
+	<bean id="getbiz" class="com.youdanle.biz.impl.GetorderBizImpl">
+		<property name="getdao" ref="getdao"></property>
+		<property name="pubdao" ref="pubdao"></property>
+	</bean>
+	<bean id="carbiz" class="com.youdanle.biz.impl.CarBizImpl">
+		<property name="cardao" ref="cardao"></property>
+	</bean>
+	<bean id="companybiz" class="com.youdanle.biz.impl.CompanyBizImpl">
+		<property name="companydao" ref="companydao"></property>
+	</bean>
+	<bean id="managerbiz" class="com.youdanle.biz.impl.ManagerBizImpl">
+		<property name="managerdao" ref="managerdao"></property>
+	</bean>
+	<bean id="newbiz" class="com.youdanle.biz.impl.NewBizImpl">
+		<property name="newdao" ref="newdao"></property>
+	</bean>
+	<bean id="replybiz" class="com.youdanle.biz.impl.ReplyBizImpl">
+		<property name="replydao" ref="replydao"></property>
+	</bean>
+	<bean id="forumbiz" class="com.youdanle.biz.impl.ForumBizImpl">
+		<property name="forumdao" ref="forumdao"></property>
+		<property name="replydao" ref="replydao"></property>
+	</bean>
+	
+<!-- action -->
+	<bean id="initaction" class="com.youdanle.action.InitAction" scope="prototype">
+		<property name="ctbiz" ref="ctbiz"></property>
+		<property name="gtbiz" ref="gtbiz"></property>
+		<property name="pubbiz" ref="pubbiz"></property>
+		<property name="newbiz" ref="newbiz"></property>
+		<property name="carbiz" ref="carbiz"></property>
+		<property name="companybiz" ref="companybiz"></property>
+	</bean>
+	<bean id="useraction" class="com.youdanle.action.UserAction" scope="prototype">
+		<property name="companybiz" ref="companybiz"></property>
+		<property name="managerbiz" ref="managerbiz"></property>
+		<property name="carbiz" ref="carbiz"></property>
+		<property name="ctbiz" ref="ctbiz"></property>
+		<property name="gtbiz" ref="gtbiz"></property>
+		<property name="pubbiz" ref="pubbiz"></property>
+		<property name="newbiz" ref="newbiz"></property>
+		<property name="getbiz" ref="getbiz"></property>
+	</bean>
+	<bean id="newaction" class="com.youdanle.action.NewAction" scope="prototype">
+		<property name="newbiz" ref="newbiz"></property>
+	</bean>
+	<bean id="forumaction" class="com.youdanle.action.ForumAction" scope="prototype">
+		<property name="replybiz" ref="replybiz"></property>
+		<property name="forumbiz" ref="forumbiz"></property>
+	</bean>
+	<bean id="pubaction" class="com.youdanle.action.PubAction" scope="prototype">
+		<property name="pubbiz" ref="pubbiz"></property>
+	</bean>
+	<bean id="caraction" class="com.youdanle.action.CarAction" scope="prototype">
+		<property name="carbiz" ref="carbiz"></property>
+	</bean>
+	<bean id="comaction" class="com.youdanle.action.ComAction" scope="prototype">
+		<property name="combiz" ref="companybiz"></property>
+	</bean>
+	<bean id="getaction" class="com.youdanle.action.GetAction" scope="prototype">
+		<property name="getbiz" ref="getbiz"></property>
+		<property name="carbiz" ref="carbiz"></property>
+		<property name="combiz" ref="companybiz"></property>
+	</bean>
+	<bean id="ajaxaction" class="com.youdanle.action.AjaxAction" scope="prototype">
+		<property name="pubbiz" ref="pubbiz"></property>
+	</bean>
+	<bean id="replyaction" class="com.youdanle.action.ReplyAction" scope="prototype">
+		<property name="replybiz" ref="replybiz"></property>
+	</bean>
+<!-- util -->
+	</beans>

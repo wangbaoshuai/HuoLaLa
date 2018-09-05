@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+<include file="struts_ajax.xml"></include>
+<package name="default" namespace="/" extends="struts-default">
+
+<interceptors>
+	<interceptor-stack name="loadStack">
+			<interceptor-ref name="fileUpload">
+				<param name="allowedTypes">image/pjpeg,image/gif</param>
+				<param name="maximumSize">102400</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+	</interceptor-stack>
+</interceptors>
+
+	<global-results>
+		<result name="exception">/404.html</result>
+	</global-results>
+	<action name="*User" class="useraction" method="{1}">
+		<interceptor-ref name="loadStack"></interceptor-ref> 
+		<result name="login_success">/index.jsp</result>
+		<result name="adminlogin_success">/admin/index.jsp</result>
+		<result name="findCarByTerm_success">/admin/index.jsp</result>
+		<result name="addcar_success">/login.jsp</result>
+		<result name="addcom_success">/login.jsp</result>
+		<result name="adminlogin_error">/admin.jsp</result>
+		<result name="updatecom_success">/personal.jsp</result>
+		<result name="updatecar_success">/carinfo.jsp</result>
+	</action>
+	<action name="*Init" class="initaction" method="{1}">
+		<result name="success">/index3.jsp</result>
+	</action>
+	<action name="*Pub" class="pubaction" method="{1}">
+		<interceptor-ref name="loadStack"></interceptor-ref>
+		<result name="success">/showallsub.jsp</result>
+		<result name="adminfindone_success">/admin/allpub.jsp</result>
+		<result name="findone_success">/showonesub.jsp</result>
+		<result name="findone_update">/updatepub.jsp</result>
+		<result name="add_success">/personal.jsp</result>
+		<result name="adminupdate_success">/admin/allpub.jsp</result>
+		<result name="update_success">/personal.jsp</result>
+	</action>
+	<action name="*Car" class="caraction" method="{1}">
+		<result name="success">/showallcar.jsp</result>
+		<result name="findone_success">/showonecar.jsp</result>
+		<result name="adminupdate_success">/admin/allcar.jsp</result>
+	</action>
+	<action name="*Com" class="comaction" method="{1}">
+		<result name="adminfindByTerm_success">/admin/allcom.jsp</result>
+		<result name="findByTerm_success">/showallcom.jsp</result>
+		<result name="adminfindone_success">/admin/showonecom.jsp</result>
+		<result name="adminupdate_success">/admin/allcom.jsp</result>
+	</action>
+	<action name="*Get" class="getaction" method="{1}">
+		<result name="success">/showallget.jsp</result>
+		<result name="findone_success">/showoneget.jsp</result>
+		<result name="add_success">/index.jsp</result>
+		<result name="delete_success">/carinfo.jsp</result>
+		<result name="admindelete_success">/admin/ordering.jsp</result>
+		<result name="update_success">/personal.jsp</result>
+	</action>
+	<action name="*New" class="newaction" method="{1}">
+		<interceptor-ref name="loadStack"></interceptor-ref>
+		<result name="findall_success">/showallnew.jsp</result>
+		<result name="findone_success">/new.jsp</result>
+		<result name="admin_findone">/admin/updatenew.jsp</result>
+		<result name="add_success">/admin/allnew.jsp</result>
+		<result name="update_success">/admin/allnew.jsp</result>
+		<result name="delete_success">/admin/allnew.jsp</result>
+		<result name="findByPage_success">/showallnew.jsp</result>
+	</action>
+	<action name="*Forum" class="forumaction" method="{1}">
+		<result name="findByPage_success">/showallforum.jsp</result>
+		<result name="findone_success">/showreply.jsp</result>
+		<result name="adminfindone_success">/admin/showreply.jsp</result>
+		<result name="add_success" type="redirectAction">
+			<param name="namespace">/</param>
+			<param name="actionName">findByPageForum?nowpage=1</param>
+		</result>
+		<result name="adminfindByPage_success">/admin/allforum.jsp</result>
+		<result name="admindelete_success" type="redirectAction">
+			<param name="namespace">/</param>
+			<param name="actionName">findByPageForum?nowpage=1&amp;type=admin</param>
+		</result>
+	</action>
+	<action name="*Reply" class="replyaction" method="{1}">
+		<result name="add_success" type="redirectAction">
+			<param name="namespace">/</param>
+			<param name="actionName">findoneForum?forum.fid=${reply.forum.fid}</param>
+		</result>
+		<result name="delete_success" type="redirectAction">
+			<param name="namespace">/</param>
+			<param name="actionName">findoneForum?forum.fid=${reply.forum.fid}</param>
+		</result>
+		<result name="admindelete_success" type="redirectAction">
+			<param name="namespace">/</param>
+			<param name="actionName">findoneForum?forum.fid=${reply.forum.fid}&amp;type=admin</param>
+		</result>
+	</action>
+</package>
+</struts>    
